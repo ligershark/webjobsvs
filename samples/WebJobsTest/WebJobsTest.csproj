@@ -60,6 +60,9 @@
     <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.exe.config" />
     <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.vshost.exe.config" />
     <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.vshost.exe.manifest" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.exe.config" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.vshost.exe.config" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.vshost.exe.manifest" />
     <None Include="Properties\PublishProfiles\HelloWorldJobs1.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -80,6 +83,17 @@
     <Content Include="App_Data\jobs\continuous\HelloWorld\Microsoft.WindowsAzure.StorageClient.dll" />
     <Content Include="App_Data\jobs\continuous\HelloWorld\Newtonsoft.Json.dll" />
     <Content Include="App_Data\jobs\continuous\HelloWorld\Newtonsoft.Json.xml" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\Microsoft.WindowsAzure.Configuration.dll" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\Microsoft.WindowsAzure.Jobs.dll" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\Microsoft.WindowsAzure.Jobs.Host.dll" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\Microsoft.WindowsAzure.Jobs.Host.xml" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\Microsoft.WindowsAzure.Jobs.xml" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\Microsoft.WindowsAzure.StorageClient.dll" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\Newtonsoft.Json.dll" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\Newtonsoft.Json.xml" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.exe" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.pdb" />
+    <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.vshost.exe" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
