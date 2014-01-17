@@ -57,7 +57,10 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\PublishProfiles\sayedjob2.pubxml" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.exe.config" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.vshost.exe.config" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.vshost.exe.manifest" />
+    <None Include="Properties\PublishProfiles\HelloWorldJobs1.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -66,6 +69,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.exe" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.pdb" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.vshost.exe" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\Microsoft.WindowsAzure.Configuration.dll" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\Microsoft.WindowsAzure.Jobs.dll" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\Microsoft.WindowsAzure.Jobs.Host.dll" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\Microsoft.WindowsAzure.Jobs.Host.xml" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\Microsoft.WindowsAzure.Jobs.xml" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\Microsoft.WindowsAzure.StorageClient.dll" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\Newtonsoft.Json.dll" />
+    <Content Include="App_Data\jobs\continuous\HelloWorld\Newtonsoft.Json.xml" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
