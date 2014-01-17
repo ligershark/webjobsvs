@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.WindowsAzure.Jobs</id>
+    <version>0.1.0-alpha1</version>
+    <title>Microsoft.WindowsAzure.Jobs</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <licenseUrl>http://www.microsoft.com/sample/TODO/TODO/TODO</licenseUrl>
+    <projectUrl>http://www.microsoft.com/sample/TODO/TODO/TODO</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>TODO TODO TODO This package contains the runtime assemblies for Microsoft.WindowsAzure.Jobs.</description>
+    <summary>TODO TODO TODO This package contains the runtime assemblies for Microsoft.WindowsAzure.Jobs.</summary>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <language>en-US</language>
+    <tags>Microsoft Azure WebJobs Jobs Batch</tags>
+  </metadata>
+</package>

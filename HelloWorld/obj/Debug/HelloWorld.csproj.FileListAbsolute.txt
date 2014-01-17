@@ -1,0 +1,14 @@
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\HelloWorld.exe.config
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\obj\Debug\HelloWorld.csprojResolveAssemblyReference.cache
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\HelloWorld.exe
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\HelloWorld.pdb
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\Microsoft.WindowsAzure.Configuration.dll
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\Microsoft.WindowsAzure.Jobs.dll
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\Microsoft.WindowsAzure.Jobs.Host.dll
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\Microsoft.WindowsAzure.StorageClient.dll
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\Newtonsoft.Json.dll
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\Microsoft.WindowsAzure.Jobs.xml
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\Microsoft.WindowsAzure.Jobs.Host.xml
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\bin\Debug\Newtonsoft.Json.xml
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\obj\Debug\HelloWorld.exe
+c:\users\pranavra\documents\visual studio 2013\Projects\HelloWorld\HelloWorld\obj\Debug\HelloWorld.pdb
