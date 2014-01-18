@@ -7,6 +7,10 @@ using EnvDTE;
 using EnvDTE80;
 using LigerShark.WebJobsVs.Dialog;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.ComponentModelHost;
+using NuGet.VisualStudio;
+using System.Diagnostics;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace LigerShark.WebJobsVs
 {
@@ -17,6 +21,7 @@ namespace LigerShark.WebJobsVs
     public sealed class WebJobsVsPackage : Package
     {
         private DTE2 _dte;
+        private string _webjobsPkgName = "WebJobsBuilder";
 
         protected override void Initialize()
         {
@@ -49,6 +54,9 @@ namespace LigerShark.WebJobsVs
                 var selectedProject = projects.First(p => p.Name == selector.SelectedProjectName);
                 creator.AddReference(currentProject, selectedProject);
                 creator.CreateFolders(currentProject, selector.Schedule, selector.SelectedProjectName);
+
+                // ensure that the NuGet package is installed in the project as well
+                InstallWebJobsNuGetPackage(currentProject);
             }
         }
 
@@ -84,6 +92,51 @@ namespace LigerShark.WebJobsVs
                     .Cast<ProjectItem>()
                     .Where(p => p.SubProject != null)
                     .SelectMany(p => GetChildProjects(p.SubProject));
+        }
+
+        private bool InstallWebJobsNuGetPackage(EnvDTE.Project project) {
+            bool installedPkg = false;
+            try {
+                var componentModel = (IComponentModel)GetService(typeof(SComponentModel));
+                IVsPackageInstallerServices installerServices = componentModel.GetService<IVsPackageInstallerServices>();
+                if (!installerServices.IsPackageInstalled(project, _webjobsPkgName)) {
+                    this.GetDTE().StatusBar.Text = @"Installing WebJobs NuGet package, this may take a minute...";
+
+                    IVsPackageInstaller installer = (IVsPackageInstaller)componentModel.GetService<IVsPackageInstaller>();
+                    installer.InstallPackage("All", project, _webjobsPkgName, (System.Version)null, false);
+
+                    this.GetDTE().StatusBar.Text = @"Finished installing WebJobs NuGet package";
+                }
+            }
+            catch (Exception ex) {
+                installedPkg = false;
+                LogMessageWriteLineFormat(
+                    "Unable to install [{0}] NuGet package. Error: {1}", 
+                    _webjobsPkgName, 
+                    ex.ToString());
+            }
+
+            return installedPkg;
+        }
+
+        private DTE GetDTE() {
+            return (DTE)Package.GetGlobalService(typeof(DTE));
+        }
+
+        private void LogMessageWriteLineFormat(string message, params object[] args) {
+            if (string.IsNullOrWhiteSpace(message)) { return; }
+
+            string fullMessage = string.Format(message, args);
+            Trace.WriteLine(fullMessage);
+            Debug.WriteLine(fullMessage);
+
+            IVsActivityLog log = GetService(typeof(SVsActivityLog)) as IVsActivityLog;
+            if (log == null) return;
+
+            int hr = log.LogEntry(
+                (UInt32)__ACTIVITYLOG_ENTRYTYPE.ALE_INFORMATION,
+                this.ToString(),
+                fullMessage);
         }
     }
 }
