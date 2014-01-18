@@ -116,17 +116,24 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+
+  <PropertyGroup Label="ls-WebJobs">
+    <ls-WebJobsTargetsPath Condition=" '$(ls-WebJobsTargetsPath)'=='' ">$(MSBuildProjectDirectory)\Properties\ligershark.webjobs.targets</ls-WebJobsTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(ls-WebJobsTargetsPath)" Condition="Exists('$(ls-WebJobsTargetsPath)')" Label="ls-WebJobs"/>
+  
+  
   <PropertyGroup>
-    <CopyAllFilesToSingleFolderForPackageDependsOn>
+    <!--<CopyAllFilesToSingleFolderForPackageDependsOn>
       AddWebJobToPublish;
       $(CopyAllFilesToSingleFolderForPackageDependsOn);
     </CopyAllFilesToSingleFolderForPackageDependsOn>
     <BuildDependsOn>
       $(BuildDependsOn);
       AddWebJobToPublish
-    </BuildDependsOn>
+    </BuildDependsOn>-->
   </PropertyGroup>
-  <Target Name="AddWebJobToPublish" DependsOnTargets="ResolveAssemblyReferences;CoreCompile">
+  <Target Name="AddWebJobToPublish_Prototype" DependsOnTargets="ResolveAssemblyReferences;CoreCompile">
     <ItemGroup>
       <_temp-projfullpath Remove="@(_temp-projfullpath)"/>
       <_temp-projfullpath Include="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj"/>
