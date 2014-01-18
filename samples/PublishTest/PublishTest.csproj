@@ -57,6 +57,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\PublishProfiles\ToFileSys.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -109,43 +110,62 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-
-  <Target Name="AfterBuild">
-    <Message Text="(ReferenceCopyLocalPaths):%0a%0d@(ReferenceCopyLocalPaths,'%0a%0d')" Importance="high"/>
-    <Message Text="%0a%0d AllItemsFullPathWithTargetPath:%0a%0d@(AllItemsFullPathWithTargetPath,'%0a%0d')" Importance="high"/>
-    <Message Text="%0a%0d AllItemsFullPathWithTargetPath.TargetPath:%0a%0d@(AllItemsFullPathWithTargetPath->'%(Identity): TargetPath=[%(TargetPath)]','%0a%0d')" Importance="high"/>
-    <Message Text="%0a%0d _SourceItemsToCopyToOutputDirectory:%0a%0d @(_SourceItemsToCopyToOutputDirectory,'%0a%0d')" Importance="high"/>
-
-    <!-- Get the build -->
-    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj"
-             Targets="GetCopyToOutputDirectoryItems">
-      <Output ItemName ="_sayedoutput" TaskParameter="TargetOutputs"/>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      AddWebJobToPublish;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+  </PropertyGroup>
+  <Target Name="AddWebJobToPublish" DependsOnTargets="ResolveAssemblyReferences">
+    <Message Text="(ReferenceCopyLocalPaths):%0a%0d@(ReferenceCopyLocalPaths,'%0a%0d')" Importance="high" />
+    <Message Text="%0a%0d AllItemsFullPathWithTargetPath:%0a%0d@(AllItemsFullPathWithTargetPath,'%0a%0d')" Importance="high" />
+    <Message Text="%0a%0d AllItemsFullPathWithTargetPath.TargetPath:%0a%0d@(AllItemsFullPathWithTargetPath->'%(Identity): TargetPath=[%(TargetPath)]','%0a%0d')" Importance="high" />
+    <Message Text="%0a%0d _SourceItemsToCopyToOutputDirectory:%0a%0d @(_SourceItemsToCopyToOutputDirectory,'%0a%0d')" Importance="high" />
+    <!-- Get all the build outputs from the project -->
+    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj" Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;DocumentationProjectOutputGroup;SatelliteDllsProjectOutputGroup;SourceFilesProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup">
+      <Output ItemName="_sayedoutput2" TaskParameter="TargetOutputs" />
     </MSBuild>
-    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj"
-                 Targets="ContentFilesProjectOutputGroup">
-      <Output ItemName ="_sayedoutput" TaskParameter="TargetOutputs"/>
+    <!-- Now we need to get the TargetPath for the project to know where the root output folder is -->
+    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj" Targets="GetTargetPath">
+      <Output ItemName="_proj-targetpath" TaskParameter="TargetOutputs" />
     </MSBuild>
-    <RemoveDuplicates Inputs="@(_sayedoutput)">
-      <Output ItemName="sayedoutput" TaskParameter="Filtered"/>
+    <PropertyGroup>
+      <_proj-outputdirectory>@(_proj-targetpath->'%(RootDir)%(Directory)')</_proj-outputdirectory>
+    </PropertyGroup>
+    <ItemGroup>
+      <!-- Add the files to the list of item to be published -->
+      <FilesForPackagingFromProject Include="%(_sayedoutput2.Identity)">
+        <DestinationRelativePath>app_data\jobs\continuous\helloworld\%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+    <ItemGroup>
+      <temp-sayedoutput Include="@(AllItemsFullPathWithTargetPath)">
+        <Dest>%(TargetPath)</Dest>
+      </temp-sayedoutput>
+      <!--<temp-sayedoutput Include="@(_sayedoutput1);@(_sayedoutput2)">
+        <Dest>unknown</Dest>
+      </temp-sayedoutput>-->
+    </ItemGroup>
+    <RemoveDuplicates Inputs="@(temp-sayedoutput)">
+      <Output ItemName="sayedoutput" TaskParameter="Filtered" />
     </RemoveDuplicates>
-    <Message Text="%0a%0dsayedoutput: @(sayedoutput,'%0a%0d')" Importance="high"/>
+    <RemoveDuplicates Inputs="@(_sayedoutput)">
+      <Output ItemName="sayedoutput" TaskParameter="Filtered" />
+    </RemoveDuplicates>
+    <Message Text="%0a%0d _sayedoutput1:%0a%0d@(_sayedoutput1->'%(Identity): Dest=[%(Dest)]','%0a%0d')" Importance="high" />
+    <Message Text="%0a%0d _sayedoutput2:%0a%0d@(_sayedoutput2->'%(Identity): Dest=[%(Dest)]','%0a%0d')" Importance="high" />
+    <Message Text="%0a%0d _proj-targetpath:%0a%0d@(_proj-targetpath->'%(Identity)','%0a%0d')" Importance="high" />
+    <Message Text="%0a%0d _proj-outputdirectory: $(_proj-outputdirectory)" Importance="high" />
+    <Message Text="%0a%0d sayedoutput:%0a%0d@(sayedoutput->'%(Identity): Dest=[%(Dest)]','%0a%0d')" Importance="high" />
     <!--<Message Text="_sayedoutput2: @(_sayedoutput2,'%0a%0d')" Importance="high"/>-->
   </Target>
-
-  <Target Name="GetWebJobsToPublish"
-          DependsOnTargets="GetCopyToOutputDirectoryItems;ResolveAssemblyReferences;Build">
-
+  <Target Name="GetWebJobsToPublish" DependsOnTargets="GetCopyToOutputDirectoryItems;ResolveAssemblyReferences;Build">
     <!--
     Search through ReferenceCopyLocalPaths for any value that has the metadata
     MSBuildSourceProjectFile = <full-path-to-webjob-proj>
     -->
     <ItemGroup>
-      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)"
-                       Condition=" 'MSBuildSourceProjectFile'=='C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj' "/>
+      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)" Condition=" 'MSBuildSourceProjectFile'=='C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj' " />
     </ItemGroup>
-
-
-
   </Target>
-  
 </Project>
