@@ -57,6 +57,8 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\PublishProfiles\sayedjob2.pubxml" />
+    <None Include="Properties\PublishProfiles\sayedsample01.pubxml" />
     <None Include="Properties\PublishProfiles\ToFileSys.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -115,15 +117,24 @@
       AddWebJobToPublish;
       $(CopyAllFilesToSingleFolderForPackageDependsOn);
     </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <BuildDependsOn>
+      $(BuildDependsOn);
+      AddWebJobToPublish
+    </BuildDependsOn>
   </PropertyGroup>
-  <Target Name="AddWebJobToPublish" DependsOnTargets="ResolveAssemblyReferences">
+  <Target Name="AddWebJobToPublish" DependsOnTargets="ResolveAssemblyReferences;CoreCompile">
     <Message Text="(ReferenceCopyLocalPaths):%0a%0d@(ReferenceCopyLocalPaths,'%0a%0d')" Importance="high" />
     <Message Text="%0a%0d AllItemsFullPathWithTargetPath:%0a%0d@(AllItemsFullPathWithTargetPath,'%0a%0d')" Importance="high" />
     <Message Text="%0a%0d AllItemsFullPathWithTargetPath.TargetPath:%0a%0d@(AllItemsFullPathWithTargetPath->'%(Identity): TargetPath=[%(TargetPath)]','%0a%0d')" Importance="high" />
     <Message Text="%0a%0d _SourceItemsToCopyToOutputDirectory:%0a%0d @(_SourceItemsToCopyToOutputDirectory,'%0a%0d')" Importance="high" />
     <!-- Get all the build outputs from the project -->
-    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj" Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;DocumentationProjectOutputGroup;SatelliteDllsProjectOutputGroup;SourceFilesProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup">
+    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj" 
+             Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup">
       <Output ItemName="_sayedoutput2" TaskParameter="TargetOutputs" />
+    </MSBuild>
+    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj"
+             Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup;PriFilesOutputGroup">
+      <Output ItemName="_sayedoutput2-2" TaskParameter="TargetOutputs" />
     </MSBuild>
     <!-- Now we need to get the TargetPath for the project to know where the root output folder is -->
     <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj" Targets="GetTargetPath">
@@ -135,7 +146,7 @@
     <ItemGroup>
       <!-- Add the files to the list of item to be published -->
       <FilesForPackagingFromProject Include="%(_sayedoutput2.Identity)">
-        <DestinationRelativePath>app_data\jobs\continuous\helloworld\%(Filename)%(Extension)</DestinationRelativePath>
+        <DestinationRelativePath>app_data\jobs\continuous\helloworld\%(_sayedoutput2.TargetPath)</DestinationRelativePath>
       </FilesForPackagingFromProject>
     </ItemGroup>
     <ItemGroup>
@@ -153,7 +164,8 @@
       <Output ItemName="sayedoutput" TaskParameter="Filtered" />
     </RemoveDuplicates>
     <Message Text="%0a%0d _sayedoutput1:%0a%0d@(_sayedoutput1->'%(Identity): Dest=[%(Dest)]','%0a%0d')" Importance="high" />
-    <Message Text="%0a%0d _sayedoutput2:%0a%0d@(_sayedoutput2->'%(Identity): Dest=[%(Dest)]','%0a%0d')" Importance="high" />
+    <Message Text="%0a%0d _sayedoutput2:%0a%0d@(_sayedoutput2->'%(Identity): TargetPath=[%(TargetPath)]','%0a%0d')" Importance="high" />
+    <Message Text="%0a%0d _sayedoutput2-2:%0a%0d@(_sayedoutput2-2->'%(Identity)','%0a%0d')" Importance="high" />
     <Message Text="%0a%0d _proj-targetpath:%0a%0d@(_proj-targetpath->'%(Identity)','%0a%0d')" Importance="high" />
     <Message Text="%0a%0d _proj-outputdirectory: $(_proj-outputdirectory)" Importance="high" />
     <Message Text="%0a%0d sayedoutput:%0a%0d@(sayedoutput->'%(Identity): Dest=[%(Dest)]','%0a%0d')" Importance="high" />

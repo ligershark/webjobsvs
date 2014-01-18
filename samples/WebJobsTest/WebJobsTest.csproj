@@ -64,6 +64,9 @@
     <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.vshost.exe.config" />
     <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.vshost.exe.manifest" />
     <None Include="Properties\PublishProfiles\HelloWorldJobs1.pubxml" />
+    <None Include="Properties\PublishProfiles\sayedjob2.pubxml" />
+    <None Include="Properties\PublishProfiles\sayedsample01.pubxml" />
+    <None Include="Properties\PublishProfiles\ToFilesys.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
