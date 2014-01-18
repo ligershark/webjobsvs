@@ -128,16 +128,16 @@
     <Message Text="%0a%0d AllItemsFullPathWithTargetPath.TargetPath:%0a%0d@(AllItemsFullPathWithTargetPath->'%(Identity): TargetPath=[%(TargetPath)]','%0a%0d')" Importance="high" />
     <Message Text="%0a%0d _SourceItemsToCopyToOutputDirectory:%0a%0d @(_SourceItemsToCopyToOutputDirectory,'%0a%0d')" Importance="high" />
     <!-- Get all the build outputs from the project -->
-    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj" 
+    <MSBuild Projects="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj" 
              Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup">
       <Output ItemName="_sayedoutput2" TaskParameter="TargetOutputs" />
     </MSBuild>
-    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj"
+    <MSBuild Projects="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj"
              Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup;PriFilesOutputGroup">
       <Output ItemName="_sayedoutput2-2" TaskParameter="TargetOutputs" />
     </MSBuild>
     <!-- Now we need to get the TargetPath for the project to know where the root output folder is -->
-    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj" Targets="GetTargetPath">
+    <MSBuild Projects="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj" Targets="GetTargetPath">
       <Output ItemName="_proj-targetpath" TaskParameter="TargetOutputs" />
     </MSBuild>
     <PropertyGroup>
@@ -177,7 +177,7 @@
     MSBuildSourceProjectFile = <full-path-to-webjob-proj>
     -->
     <ItemGroup>
-      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)" Condition=" 'MSBuildSourceProjectFile'=='C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj' " />
+      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)" Condition=" 'MSBuildSourceProjectFile'=='$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj' " />
     </ItemGroup>
   </Target>
 </Project>
