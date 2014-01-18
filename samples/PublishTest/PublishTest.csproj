@@ -109,4 +109,43 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+
+  <Target Name="AfterBuild">
+    <Message Text="(ReferenceCopyLocalPaths):%0a%0d@(ReferenceCopyLocalPaths,'%0a%0d')" Importance="high"/>
+    <Message Text="%0a%0d AllItemsFullPathWithTargetPath:%0a%0d@(AllItemsFullPathWithTargetPath,'%0a%0d')" Importance="high"/>
+    <Message Text="%0a%0d AllItemsFullPathWithTargetPath.TargetPath:%0a%0d@(AllItemsFullPathWithTargetPath->'%(Identity): TargetPath=[%(TargetPath)]','%0a%0d')" Importance="high"/>
+    <Message Text="%0a%0d _SourceItemsToCopyToOutputDirectory:%0a%0d @(_SourceItemsToCopyToOutputDirectory,'%0a%0d')" Importance="high"/>
+
+    <!-- Get the build -->
+    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj"
+             Targets="GetCopyToOutputDirectoryItems">
+      <Output ItemName ="_sayedoutput" TaskParameter="TargetOutputs"/>
+    </MSBuild>
+    <MSBuild Projects="C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj"
+                 Targets="ContentFilesProjectOutputGroup">
+      <Output ItemName ="_sayedoutput" TaskParameter="TargetOutputs"/>
+    </MSBuild>
+    <RemoveDuplicates Inputs="@(_sayedoutput)">
+      <Output ItemName="sayedoutput" TaskParameter="Filtered"/>
+    </RemoveDuplicates>
+    <Message Text="%0a%0dsayedoutput: @(sayedoutput,'%0a%0d')" Importance="high"/>
+    <!--<Message Text="_sayedoutput2: @(_sayedoutput2,'%0a%0d')" Importance="high"/>-->
+  </Target>
+
+  <Target Name="GetWebJobsToPublish"
+          DependsOnTargets="GetCopyToOutputDirectoryItems;ResolveAssemblyReferences;Build">
+
+    <!--
+    Search through ReferenceCopyLocalPaths for any value that has the metadata
+    MSBuildSourceProjectFile = <full-path-to-webjob-proj>
+    -->
+    <ItemGroup>
+      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)"
+                       Condition=" 'MSBuildSourceProjectFile'=='C:\Data\personal\mycode\webjobsvs\samples\HelloWorld\HelloWorld.csproj' "/>
+    </ItemGroup>
+
+
+
+  </Target>
+  
 </Project>
