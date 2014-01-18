@@ -48,7 +48,7 @@ namespace LigerShark.WebJobsVs
                 WebJobCreator creator = new WebJobCreator();
                 var selectedProject = projects.First(p => p.Name == selector.SelectedProjectName);
                 creator.AddReference(currentProject, selectedProject);
-                creator.CreateFolders(currentProject, selector.Schedule);
+                creator.CreateFolders(currentProject, selector.Schedule, selector.SelectedProjectName);
             }
         }
 

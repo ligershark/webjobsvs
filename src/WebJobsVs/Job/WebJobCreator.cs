@@ -11,23 +11,15 @@ namespace LigerShark.WebJobsVs
             vslangProject.References.AddProject(selectedProject);
         }
 
-        public void CreateFolders(Project currentProject, string schedule)
+        public void CreateFolders(Project currentProject, string schedule, string projectName)
         {
             string dir = Path.GetDirectoryName(currentProject.FullName);
+            DirectoryInfo info = new DirectoryInfo(dir)
+                .CreateSubdirectory("App_Data\\jobs")
+                .CreateSubdirectory(schedule)
+                .CreateSubdirectory(projectName);
 
-            string appData = Path.Combine(dir, "App_Data");
-            if (!Directory.Exists(appData))
-                Directory.CreateDirectory(appData);
-
-            string jobs = Path.Combine(appData, "jobs");
-            if (!Directory.Exists(jobs))
-                Directory.CreateDirectory(jobs);
-
-            string method = Path.Combine(jobs, schedule);
-            if (!Directory.Exists(method))
-                Directory.CreateDirectory(method);
-
-            string readmeFile = Path.Combine(method, "readme.txt");
+            string readmeFile = Path.Combine(info.FullName, "readme.txt");
             AddReadMe(readmeFile);
             currentProject.ProjectItems.AddFromFile(readmeFile);
         }
