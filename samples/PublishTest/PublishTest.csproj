@@ -79,6 +79,10 @@
       <Project>{4377f8a8-8dd3-485b-a53b-ce0a10dc9725}</Project>
       <Name>HelloWorld</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OtherProject\OtherProject.csproj">
+      <Project>{8ebac344-8863-4fa9-9e9d-171ed1d53ce1}</Project>
+      <Name>OtherProject</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -123,17 +127,34 @@
     </BuildDependsOn>
   </PropertyGroup>
   <Target Name="AddWebJobToPublish" DependsOnTargets="ResolveAssemblyReferences;CoreCompile">
-    <Message Text="(ReferenceCopyLocalPaths):%0a%0d@(ReferenceCopyLocalPaths,'%0a%0d')" Importance="high" />
+    <ItemGroup>
+      <_temp-projfullpath Remove="@(_temp-projfullpath)"/>
+      <_temp-projfullpath Include="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj"/>
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_temp-fullpath>%(_temp-projfullpath.FullPath)</_temp-fullpath>
+    </PropertyGroup>
+    
+    <Message Text="FullPath: $(_temp-fullpath)" Importance="high"/>
+    
+    <ItemGroup>
+      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)"
+                       Condition=" '%(MSBuildSourceProjectFile)'=='$(_temp-fullpath)' " />
+    </ItemGroup>
+    
+    <Message Text="(ReferenceCopyLocalPaths):%0a%0d@(ReferenceCopyLocalPaths->'%(Identity): MSBuildSourceProjectFile=[%(MSBuildSourceProjectFile)]','%0a%0d')" Importance="high" />
+    <Message Text="(_RefFilesToCopy):%0a%0d@(_RefFilesToCopy->'%(Identity): FE=[%(Filename)%(Extension)]','%0a%0d')" Importance="high" />
     <Message Text="%0a%0d AllItemsFullPathWithTargetPath:%0a%0d@(AllItemsFullPathWithTargetPath,'%0a%0d')" Importance="high" />
     <Message Text="%0a%0d AllItemsFullPathWithTargetPath.TargetPath:%0a%0d@(AllItemsFullPathWithTargetPath->'%(Identity): TargetPath=[%(TargetPath)]','%0a%0d')" Importance="high" />
     <Message Text="%0a%0d _SourceItemsToCopyToOutputDirectory:%0a%0d @(_SourceItemsToCopyToOutputDirectory,'%0a%0d')" Importance="high" />
+
+    
     <!-- Get all the build outputs from the project -->
-    <MSBuild Projects="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj" 
-             Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup">
+    <MSBuild Projects="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj" Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup">
       <Output ItemName="_sayedoutput2" TaskParameter="TargetOutputs" />
     </MSBuild>
-    <MSBuild Projects="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj"
-             Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup;PriFilesOutputGroup">
+    <MSBuild Projects="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj" Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup;PriFilesOutputGroup">
       <Output ItemName="_sayedoutput2-2" TaskParameter="TargetOutputs" />
     </MSBuild>
     <!-- Now we need to get the TargetPath for the project to know where the root output folder is -->
@@ -145,6 +166,9 @@
     </PropertyGroup>
     <ItemGroup>
       <!-- Add the files to the list of item to be published -->
+      <FilesForPackagingFromProject Include="%(_RefFilesToCopy.Identity)">
+        <DestinationRelativePath>app_data\jobs\continuous\helloworld\%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
       <FilesForPackagingFromProject Include="%(_sayedoutput2.Identity)">
         <DestinationRelativePath>app_data\jobs\continuous\helloworld\%(_sayedoutput2.TargetPath)</DestinationRelativePath>
       </FilesForPackagingFromProject>
@@ -177,7 +201,8 @@
     MSBuildSourceProjectFile = <full-path-to-webjob-proj>
     -->
     <ItemGroup>
-      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)" Condition=" 'MSBuildSourceProjectFile'=='$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj' " />
+      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)" 
+                       Condition=" 'MSBuildSourceProjectFile'=='$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj' " />
     </ItemGroup>
   </Target>
 </Project>
