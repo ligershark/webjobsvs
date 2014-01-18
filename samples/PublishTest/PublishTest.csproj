@@ -60,6 +60,7 @@
     <None Include="Properties\PublishProfiles\sayedjob2.pubxml" />
     <None Include="Properties\PublishProfiles\sayedsample01.pubxml" />
     <None Include="Properties\PublishProfiles\ToFileSys.pubxml" />
+    <None Include="Properties\PublishProfiles\WebApplication12749.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -116,13 +117,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-
   <PropertyGroup Label="ls-WebJobs">
     <ls-WebJobsTargetsPath Condition=" '$(ls-WebJobsTargetsPath)'=='' ">$(MSBuildProjectDirectory)\Properties\ligershark.webjobs.targets</ls-WebJobsTargetsPath>
   </PropertyGroup>
-  <Import Project="$(ls-WebJobsTargetsPath)" Condition="Exists('$(ls-WebJobsTargetsPath)')" Label="ls-WebJobs"/>
-  
-  
+  <Import Project="$(ls-WebJobsTargetsPath)" Condition="Exists('$(ls-WebJobsTargetsPath)')" Label="ls-WebJobs" />
   <PropertyGroup>
     <!--<CopyAllFilesToSingleFolderForPackageDependsOn>
       AddWebJobToPublish;
@@ -135,28 +133,21 @@
   </PropertyGroup>
   <Target Name="AddWebJobToPublish_Prototype" DependsOnTargets="ResolveAssemblyReferences;CoreCompile">
     <ItemGroup>
-      <_temp-projfullpath Remove="@(_temp-projfullpath)"/>
-      <_temp-projfullpath Include="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj"/>
+      <_temp-projfullpath Remove="@(_temp-projfullpath)" />
+      <_temp-projfullpath Include="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj" />
     </ItemGroup>
-
     <PropertyGroup>
       <_temp-fullpath>%(_temp-projfullpath.FullPath)</_temp-fullpath>
     </PropertyGroup>
-    
-    <Message Text="FullPath: $(_temp-fullpath)" Importance="high"/>
-    
+    <Message Text="FullPath: $(_temp-fullpath)" Importance="high" />
     <ItemGroup>
-      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)"
-                       Condition=" '%(MSBuildSourceProjectFile)'=='$(_temp-fullpath)' " />
+      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)" Condition=" '%(MSBuildSourceProjectFile)'=='$(_temp-fullpath)' " />
     </ItemGroup>
-    
     <Message Text="(ReferenceCopyLocalPaths):%0a%0d@(ReferenceCopyLocalPaths->'%(Identity): MSBuildSourceProjectFile=[%(MSBuildSourceProjectFile)]','%0a%0d')" Importance="high" />
     <Message Text="(_RefFilesToCopy):%0a%0d@(_RefFilesToCopy->'%(Identity): FE=[%(Filename)%(Extension)]','%0a%0d')" Importance="high" />
     <Message Text="%0a%0d AllItemsFullPathWithTargetPath:%0a%0d@(AllItemsFullPathWithTargetPath,'%0a%0d')" Importance="high" />
     <Message Text="%0a%0d AllItemsFullPathWithTargetPath.TargetPath:%0a%0d@(AllItemsFullPathWithTargetPath->'%(Identity): TargetPath=[%(TargetPath)]','%0a%0d')" Importance="high" />
     <Message Text="%0a%0d _SourceItemsToCopyToOutputDirectory:%0a%0d @(_SourceItemsToCopyToOutputDirectory,'%0a%0d')" Importance="high" />
-
-    
     <!-- Get all the build outputs from the project -->
     <MSBuild Projects="$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj" Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup">
       <Output ItemName="_sayedoutput2" TaskParameter="TargetOutputs" />
@@ -208,8 +199,7 @@
     MSBuildSourceProjectFile = <full-path-to-webjob-proj>
     -->
     <ItemGroup>
-      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)" 
-                       Condition=" 'MSBuildSourceProjectFile'=='$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj' " />
+      <_RefFilesToCopy Include="@(ReferenceCopyLocalPaths)" Condition=" 'MSBuildSourceProjectFile'=='$(MSBuildProjectDirectory)\..\HelloWorld\HelloWorld.csproj' " />
     </ItemGroup>
   </Target>
 </Project>

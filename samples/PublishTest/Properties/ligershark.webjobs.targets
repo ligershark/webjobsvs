@@ -10,6 +10,34 @@
       ls-AddWebJobFilesToPublish;
       $(CopyAllFilesToSingleFolderForPackageDependsOn);
     </CopyAllFilesToSingleFolderForPackageDependsOn>
+
+
+    <OnAfterPipelinePreDeployCopyAllFilesToOneFolder>
+      ls-AddWebJobFilesToPublish;
+      $(OnAfterPipelinePreDeployCopyAllFilesToOneFolder);      
+    </OnAfterPipelinePreDeployCopyAllFilesToOneFolder>
+    <CopyAllFilesToSingleFolderForMsdeploy>
+      ls-AddWebJobFilesToPublish;
+      $(CopyAllFilesToSingleFolderForMsdeploy);
+    </CopyAllFilesToSingleFolderForMsdeploy>
+
+    <!-- For VS2012 -->
+    <PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
+      ls-AddWebJobFilesToPublish;
+      $(PipelineCopyAllFilesToOneFolderForMsdeployDependsOn);      
+    </PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
+
+    <!-- Required for File System -->
+    <PipelinePreDeployCopyAllFilesToOneFolderDependsOn>
+      ls-AddWebJobFilesToPublish;
+      $(PipelinePreDeployCopyAllFilesToOneFolderDependsOn);      
+    </PipelinePreDeployCopyAllFilesToOneFolderDependsOn>
+    <!-- required for FS support from the VS publish dialog -->
+    <OnAfterCopyAllFilesToSingleFolderForPackage>
+      ls-AddWebJobFilesToPublish;
+      $(OnAfterCopyAllFilesToSingleFolderForPackage);      
+    </OnAfterCopyAllFilesToSingleFolderForPackage>
+    
   </PropertyGroup>
   <ItemGroup>
     <_ls-WebJobsSourceFolers Include="App_Data\jobs\continuous\"/>
@@ -100,8 +128,8 @@
       <_ls-projectRefFiles  Include="@(ReferenceCopyLocalPaths)"
                      Condition=" '%(ReferenceCopyLocalPaths.MSBuildSourceProjectFile)'=='$(_ls-projFullPath)' " />
     </ItemGroup>
-    <Message Text="_ls-projName:$(_ls-projName)" Importance="high"/>
-    <Message Text="WebJobs: Reference files for publishing _ls-projectRefFiles: [@(_ls-projectRefFiles,'%0a%0d')]" Importance="high" />
+    <Message Text="webjobs: _ls-projName:$(_ls-projName)" Importance="low"/>
+    <Message Text="webjobs: Reference files for publishing _ls-projectRefFiles: [@(_ls-projectRefFiles,'%0a%0d')]" Importance="low" />
 
     <!-- Get all the build outputs from the project -->
     <ItemGroup>
@@ -114,6 +142,7 @@
     
     <!-- Now add these files to the correct item in order to have the published -->
     <ItemGroup>
+      <!-- Add references from the project -->
       <FilesForPackagingFromProject Include="%(_ls-projectRefFiles.Identity)" 
                                     Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\continuous\$(_ls-projName)\')">
         <DestinationRelativePath>app_data\jobs\continuous\$(_ls-projName)\%(Filename)%(Extension)</DestinationRelativePath>
@@ -122,7 +151,8 @@
                                     Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\triggered\$(_ls-projName)\')">
         <DestinationRelativePath>app_data\jobs\triggered\$(_ls-projName)\%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
-      
+
+      <!-- Add outputs from the project -->
       <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)" 
                                     Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\continuous\$(_ls-projName)\')">
         <DestinationRelativePath>app_data\jobs\continuous\$(_ls-projName)\%(_ls-projOutputs.TargetPath)</DestinationRelativePath>
@@ -130,15 +160,8 @@
       <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)"
                                     Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\triggered\$(_ls-projName)\')">
         <DestinationRelativePath>app_data\jobs\triggered\$(_ls-projName)\%(_ls-projOutputs.TargetPath)</DestinationRelativePath>
-      </FilesForPackagingFromProject>
-      
+      </FilesForPackagingFromProject>      
     </ItemGroup>
-
-    <Message Text="FilesForPackagingFromProject: %0a%0d@(FilesForPackagingFromProject->'%(Identity): DestinationRelativePath=[%(DestinationRelativePath)]','%0a%0d')" Importance="high"/>
-  </Target>
-
-  <Target Name="Demo" DependsOnTargets="ls-DiscoverWebJobs;ls-AddWebJobFilesToPublish">
-    <Message Text="ls-WebJobs: @(ls-WebJobs)" Importance="high"/>
   </Target>
 
 </Project>
