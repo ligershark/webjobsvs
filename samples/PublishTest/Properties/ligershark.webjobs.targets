@@ -1,6 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildProjectDirectory)\Properties\webjobs.props"
+          Condition="Exists('$(MSBuildProjectDirectory)\Properties\webjobs.props')" />
+  
+  <PropertyGroup>
+    <wj-ExtendWebPublish Condition=" '$(wj-ExtendWebPublish)'=='' ">true</wj-ExtendWebPublish>
 
+    <CopyAllFilesToSingleFolderForPackageDependsOn Condition=" '$(wj-ExtendWebPublish)'=='true' ">
+      ls-AddWebJobFilesToPublish;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+  </PropertyGroup>
   <ItemGroup>
     <_ls-WebJobsSourceFolers Include="App_Data\jobs\continuous\"/>
     <_ls-WebJobsSourceFolers Include="App_Data\jobs\triggered\"/>
@@ -16,19 +26,21 @@
        
    This target runs once per value in @(ProjectReference)
   -->
-  <Target Name="ls-DiscoverWebJobs" Outputs="%(ProjectReference.Identity)">
-    <Message Text="ProjectReference: @(ProjectReference->'%(Identity): F=[%(Filename)]')" Importance="high"/>
+  <Target Name="ls-DiscoverWebJobs" 
+          Outputs="%(ProjectReference.Identity)"
+          DependsOnTargets="$(ls-DiscoverWebJobsDependsOn)">
     <!-- For this reference see if there is at least one file in the expected location -->
     <PropertyGroup>
       <_ls-projectfilename>%(ProjectReference.Filename)</_ls-projectfilename>
     </PropertyGroup>
-    
-    <Message Text="_ls-projectfilename: $(_ls-projectfilename)" Importance="high"/>
+
+    <Message Text="webjobs: considering ProjectReference [$(_ls-projectfilename)] as a webjob" Importance="low"/>
     <ItemGroup>
       <_ls-WebJobIndicator Remove="@(_ls-WebJobIndicator)"/>
     </ItemGroup>
        
-    <FindUnderPath Files="@(Content);@(None);@(Resource);@(EmbeddedResource)" Path="%(_ls-WebJobsSourceFolers.Identity)$(_ls-projectfilename)">
+    <FindUnderPath Files="@(Content);@(None);@(Resource);@(EmbeddedResource)" 
+                   Path="%(_ls-WebJobsSourceFolers.Identity)$(_ls-projectfilename)">
       <Output TaskParameter="InPath" ItemName="_ls-WebJobIndicator"/>
     </FindUnderPath>
 
@@ -36,20 +48,29 @@
       <_ls-iswebjob>false</_ls-iswebjob>
       <_ls-iswebjob Condition=" '@(_ls-WebJobIndicator)'!='' ">true</_ls-iswebjob>
     </PropertyGroup>
-    <Message Text="_ls-iswebjob: $(_ls-iswebjob)" Importance="low"/>
+    <Message Text="webjobs: is [$(_ls-projectfilename)] a webjob?=[$(_ls-iswebjob)]" Importance="low" />
     
     <ItemGroup>
-      <ls-WebJobs Include="%(ProjectReference.Identity)" Condition=" '$(_ls-iswebjob)'=='true' "/>
+      <!-- If it's a webjob add it to the collection of items -->
+      <ls-WebJobs Include="%(ProjectReference.Identity)" 
+                  Condition=" '$(_ls-iswebjob)'=='true' " />
     </ItemGroup>
   </Target>
-
+  <Target Name="ls-MessageForDiscoverWebJobs">
+    <Message Text="webjobs: Looking for webjobs in the project" Importance="low"/>
+  </Target>
+  
   <PropertyGroup>
+    <ls-DiscoverWebJobsDependsOn>
+      $(ls-DiscoverWebJobsDependsOn);
+      ls-MessageForDiscoverWebJobs
+    </ls-DiscoverWebJobsDependsOn>
     <ls-AddWebJobFilesToPublishDependsOn>
       $(ls-AddWebJobFilesToPublishDependsOn);
       ResolveReferences;
       ResolveAssemblyReferences;
       ls-DiscoverWebJobs
-    </ls-AddWebJobFilesToPublishDependsOn>
+    </ls-AddWebJobFilesToPublishDependsOn>  
   </PropertyGroup>
   <!--
   This target runs once per value in ls-WebJobs
@@ -101,6 +122,16 @@
                                     Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\triggered\$(_ls-projName)\')">
         <DestinationRelativePath>app_data\jobs\triggered\$(_ls-projName)\%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
+      
+      <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)" 
+                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\continuous\$(_ls-projName)\')">
+        <DestinationRelativePath>app_data\jobs\continuous\$(_ls-projName)\%(_ls-projOutputs.TargetPath)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+      <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)"
+                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\triggered\$(_ls-projName)\')">
+        <DestinationRelativePath>app_data\jobs\triggered\$(_ls-projName)\%(_ls-projOutputs.TargetPath)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+      
     </ItemGroup>
 
     <Message Text="FilesForPackagingFromProject: %0a%0d@(FilesForPackagingFromProject->'%(Identity): DestinationRelativePath=[%(DestinationRelativePath)]','%0a%0d')" Importance="high"/>

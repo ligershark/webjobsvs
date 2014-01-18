@@ -58,8 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.exe.config" />
-    <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.vshost.exe.config" />
-    <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.vshost.exe.manifest" />
     <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.exe.config" />
     <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.vshost.exe.config" />
     <Content Include="App_Data\jobs\triggered\HelloWorldTrigger\triggered.vshost.exe.manifest" />
@@ -77,7 +75,6 @@
   <ItemGroup>
     <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.exe" />
     <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.pdb" />
-    <Content Include="App_Data\jobs\continuous\HelloWorld\HelloWorld.vshost.exe" />
     <Content Include="App_Data\jobs\continuous\HelloWorld\Microsoft.WindowsAzure.Configuration.dll" />
     <Content Include="App_Data\jobs\continuous\HelloWorld\Microsoft.WindowsAzure.Jobs.dll" />
     <Content Include="App_Data\jobs\continuous\HelloWorld\Microsoft.WindowsAzure.Jobs.Host.dll" />
