@@ -11,7 +11,10 @@ param(
 
     $outputFolder = '.\OutputRoot\NuGet',
     
-    $nugetDevRepoPath = 'C:\temp\nuget\localrepo'
+    $nugetDevRepoPath = 'C:\temp\nuget\localrepo',
+
+    [switch]
+    $preventCreationOfDevRepoFolder
 )
 $argMsg = @"
 build-nugetpkg.ps1 called with the following args:
@@ -40,6 +43,10 @@ $nugetArgs += '-NonInteractive'
 'Calling nuget.exe with the following args: [{0}]' -f ($nugetArgs -join ' ') | Write-Host
 
 & $nugetPath $nugetArgs
+
+if(!(Test-Path $nugetDevRepoPath) -and (-not $preventCreationOfDevRepoFolder) ){
+    mkdir $nugetDevRepoPath
+}
 
 if(Test-Path $nugetDevRepoPath){
     # copy nuget packages to the dev repo
