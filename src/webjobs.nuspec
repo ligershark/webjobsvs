@@ -13,7 +13,7 @@
       This NuGet package is used to help support WebJobs in Visual Studio Web Projects.
     </description>
     <!-- <releaseNotes></releaseNotes> -->
-    <copyright>Copyright 2013</copyright>
+    <copyright>Copyright 2014 All Rights Reserved</copyright>
     <tags>WebJobs</tags>
     <!--<dependencies>
       <dependency id="SampleDependency" version="1.0" />

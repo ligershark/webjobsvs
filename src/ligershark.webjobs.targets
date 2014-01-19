@@ -1,43 +1,59 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+***********************************************************************************************
+ligershark.webjobs.targets
+
+WARNING:  DO NOT MODIFY this file, this file is added to your project automatically
+          through the WebJobsBuilder NuGet package. If you modify this file it may
+          get out of sync when you update the package at a later date.
+
+This file extends the publish process to enable support for WebJobs.
+
+You can specify custom properties by creating the file:
+  $(MSBuildProjectDirectory)\Properties\webjobs.props
+
+Copyright (C) 2014. All rights reserved.
+***********************************************************************************************
+-->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildProjectDirectory)\Properties\webjobs.props"
           Condition="Exists('$(MSBuildProjectDirectory)\Properties\webjobs.props')" />
   
   <PropertyGroup>
     <wj-ExtendWebPublish Condition=" '$(wj-ExtendWebPublish)'=='' ">true</wj-ExtendWebPublish>
-
+    
+    <!-- TODO: We should be able to remove some of these -->
     <CopyAllFilesToSingleFolderForPackageDependsOn Condition=" '$(wj-ExtendWebPublish)'=='true' ">
       ls-AddWebJobFilesToPublish;
       $(CopyAllFilesToSingleFolderForPackageDependsOn);
     </CopyAllFilesToSingleFolderForPackageDependsOn>
 
-
-    <OnAfterPipelinePreDeployCopyAllFilesToOneFolder>
+    <OnAfterPipelinePreDeployCopyAllFilesToOneFolder Condition=" '$(wj-ExtendWebPublish)'=='true' ">
       ls-AddWebJobFilesToPublish;
       $(OnAfterPipelinePreDeployCopyAllFilesToOneFolder);      
     </OnAfterPipelinePreDeployCopyAllFilesToOneFolder>
-    <CopyAllFilesToSingleFolderForMsdeploy>
+    
+    <CopyAllFilesToSingleFolderForMsdeploy Condition=" '$(wj-ExtendWebPublish)'=='true' ">
       ls-AddWebJobFilesToPublish;
       $(CopyAllFilesToSingleFolderForMsdeploy);
     </CopyAllFilesToSingleFolderForMsdeploy>
 
     <!-- For VS2012 -->
-    <PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
+    <PipelineCopyAllFilesToOneFolderForMsdeployDependsOn Condition=" '$(wj-ExtendWebPublish)'=='true' ">
       ls-AddWebJobFilesToPublish;
       $(PipelineCopyAllFilesToOneFolderForMsdeployDependsOn);      
     </PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
 
     <!-- Required for File System -->
-    <PipelinePreDeployCopyAllFilesToOneFolderDependsOn>
+    <PipelinePreDeployCopyAllFilesToOneFolderDependsOn Condition=" '$(wj-ExtendWebPublish)'=='true' ">
       ls-AddWebJobFilesToPublish;
       $(PipelinePreDeployCopyAllFilesToOneFolderDependsOn);      
     </PipelinePreDeployCopyAllFilesToOneFolderDependsOn>
     <!-- required for FS support from the VS publish dialog -->
-    <OnAfterCopyAllFilesToSingleFolderForPackage>
+    <OnAfterCopyAllFilesToSingleFolderForPackage Condition=" '$(wj-ExtendWebPublish)'=='true' ">
       ls-AddWebJobFilesToPublish;
       $(OnAfterCopyAllFilesToSingleFolderForPackage);      
-    </OnAfterCopyAllFilesToSingleFolderForPackage>
-    
+    </OnAfterCopyAllFilesToSingleFolderForPackage>    
   </PropertyGroup>
   <ItemGroup>
     <_ls-WebJobsSourceFolers Include="App_Data\jobs\continuous\"/>
@@ -109,7 +125,8 @@
   -->
   <Target Name="ls-AddWebJobFilesToPublish" 
           Outputs="%(ls-WebJobs.Identity)" 
-          DependsOnTargets="$(ls-AddWebJobFilesToPublishDependsOn)">
+          DependsOnTargets="$(ls-AddWebJobFilesToPublishDependsOn)"
+          Condition=" '@(ls-WebJobs)'!='' ">
     <!-- 
     We need to determine what references need to be copied for the project.
     We can search through @(ReferenceCopyLocalPaths) for this.
