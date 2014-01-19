@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using EnvDTE80;
 using LigerShark.WebJobsVs.Dialog;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.ComponentModelHost;
-using NuGet.VisualStudio;
-using System.Diagnostics;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using NuGet.VisualStudio;
 
 namespace LigerShark.WebJobsVs
 {
@@ -26,7 +26,7 @@ namespace LigerShark.WebJobsVs
         protected override void Initialize()
         {
             base.Initialize();
-            _dte = GetService(typeof(DTE)) as DTE2; ;
+            _dte = GetService(typeof(DTE)) as DTE2;
 
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null != mcs)
@@ -100,12 +100,12 @@ namespace LigerShark.WebJobsVs
                 var componentModel = (IComponentModel)GetService(typeof(SComponentModel));
                 IVsPackageInstallerServices installerServices = componentModel.GetService<IVsPackageInstallerServices>();
                 if (!installerServices.IsPackageInstalled(project, _webjobsPkgName)) {
-                    this.GetDTE().StatusBar.Text = @"Installing WebJobs NuGet package, this may take a minute...";
+                    _dte.StatusBar.Text = @"Installing WebJobs NuGet package, this may take a minute...";
 
                     IVsPackageInstaller installer = (IVsPackageInstaller)componentModel.GetService<IVsPackageInstaller>();
                     installer.InstallPackage("All", project, _webjobsPkgName, (System.Version)null, false);
 
-                    this.GetDTE().StatusBar.Text = @"Finished installing WebJobs NuGet package";
+                    _dte.StatusBar.Text = @"Finished installing WebJobs NuGet package";
                 }
             }
             catch (Exception ex) {
@@ -118,11 +118,7 @@ namespace LigerShark.WebJobsVs
 
             return installedPkg;
         }
-
-        private DTE GetDTE() {
-            return (DTE)Package.GetGlobalService(typeof(DTE));
-        }
-
+        
         private void LogMessageWriteLineFormat(string message, params object[] args) {
             if (string.IsNullOrWhiteSpace(message)) { return; }
 
