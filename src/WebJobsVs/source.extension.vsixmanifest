@@ -3,7 +3,9 @@
   <Metadata>
     <Identity Id="e42a8517-258b-48d1-a92e-aba474d8def8" Version="1.0" Language="en-US" Publisher="LigerShark" />
     <DisplayName>WebJobsVs</DisplayName>
-    <Description>Windows Azrure WebJobs Visual Studio Tooling</Description>
+    <Description xml:space="preserve">Adds publishing support to web projects for Windows Azure WebJobs.</Description>
+    <Icon>azure-icon-120x120.png</Icon>
+    <PreviewImage>azure-icon-256x256.png</PreviewImage>
   </Metadata>
   <Installation InstalledByMsi="false">
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0]" />
