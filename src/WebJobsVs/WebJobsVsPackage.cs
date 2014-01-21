@@ -18,6 +18,7 @@ namespace LigerShark.WebJobsVs
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(GuidList.guidWebJobsVsPkgString)]
+    [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     public sealed class WebJobsVsPackage : Package
     {
         private DTE2 _dte;
@@ -32,11 +33,53 @@ namespace LigerShark.WebJobsVs
             if (null != mcs)
             {
                 CommandID cmdId = new CommandID(GuidList.guidWebJobsVsCmdSet, (int)PkgCmdIDList.WebJobsAddProject);
-                MenuCommand button = new MenuCommand(ButtonClicked, cmdId);
+                OleMenuCommand button = new OleMenuCommand(ButtonClicked, cmdId);
+                button.BeforeQueryStatus += button_BeforeQueryStatus;
                 mcs.AddCommand(button);
             }
         }
-        
+
+        void button_BeforeQueryStatus(object sender, EventArgs e)
+        {
+            var button = (OleMenuCommand)sender;
+            var project = GetSelectedProjects().ElementAt(0);
+
+            button.Visible = IsWebProject(project);
+        }
+
+        public static bool IsWebProject(Project project)
+        {
+            if (project.Object is VsWebSite.VSWebSite)
+                return true;
+
+            try
+            {
+                var extenderNames = (object[])project.ExtenderNames;
+                return extenderNames.Any(extenderNameObject => extenderNameObject.ToString() == "WebApplication");
+            }
+            catch
+            {
+                // Ignore 
+            }
+
+            return false;
+        }
+
+        public static bool HasExtender(Project proj, string extenderName)
+        {
+            try
+            {
+                var extenderNames = (object[])proj.ExtenderNames;
+                return extenderNames.Length > 0 && extenderNames.Any(extenderNameObject => extenderNameObject.ToString() == extenderName);
+            }
+            catch
+            {
+                // Ignore
+            }
+
+            return false;
+        }
+
         private void ButtonClicked(object sender, EventArgs e)
         {
             Project currentProject = GetSelectedProjects().ElementAt(0);
@@ -94,12 +137,15 @@ namespace LigerShark.WebJobsVs
                     .SelectMany(p => GetChildProjects(p.SubProject));
         }
 
-        private bool InstallWebJobsNuGetPackage(EnvDTE.Project project) {
+        private bool InstallWebJobsNuGetPackage(EnvDTE.Project project)
+        {
             bool installedPkg = false;
-            try {
+            try
+            {
                 var componentModel = (IComponentModel)GetService(typeof(SComponentModel));
                 IVsPackageInstallerServices installerServices = componentModel.GetService<IVsPackageInstallerServices>();
-                if (!installerServices.IsPackageInstalled(project, _webjobsPkgName)) {
+                if (!installerServices.IsPackageInstalled(project, _webjobsPkgName))
+                {
                     _dte.StatusBar.Text = @"Installing WebJobs NuGet package, this may take a minute...";
 
                     IVsPackageInstaller installer = (IVsPackageInstaller)componentModel.GetService<IVsPackageInstaller>();
@@ -108,18 +154,20 @@ namespace LigerShark.WebJobsVs
                     _dte.StatusBar.Text = @"Finished installing WebJobs NuGet package";
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 installedPkg = false;
                 LogMessageWriteLineFormat(
-                    "Unable to install [{0}] NuGet package. Error: {1}", 
-                    _webjobsPkgName, 
+                    "Unable to install [{0}] NuGet package. Error: {1}",
+                    _webjobsPkgName,
                     ex.ToString());
             }
 
             return installedPkg;
         }
-        
-        private void LogMessageWriteLineFormat(string message, params object[] args) {
+
+        private void LogMessageWriteLineFormat(string message, params object[] args)
+        {
             if (string.IsNullOrWhiteSpace(message)) { return; }
 
             string fullMessage = string.Format(message, args);
