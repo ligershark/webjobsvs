@@ -25,6 +25,12 @@
     </Bitmaps>
   </Commands>
 
+  <CommandPlacements>
+    <CommandPlacement guid="guidWebJobsVsCmdSet" id="MyMenuGroup" priority="0x0100">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_WEBPROJECT"/>
+    </CommandPlacement>
+  </CommandPlacements>
+
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidWebJobsVsPkg" value="{e42a8517-258b-48d1-a92e-aba474d8def8}" />
