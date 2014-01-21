@@ -44,25 +44,7 @@ namespace LigerShark.WebJobsVs
             var button = (OleMenuCommand)sender;
             var project = GetSelectedProjects().ElementAt(0);
 
-            button.Visible = IsWebProject(project);
-        }
-
-        public static bool IsWebProject(Project project)
-        {
-            if (project.Object is VsWebSite.VSWebSite)
-                return true;
-
-            try
-            {
-                var extenderNames = (object[])project.ExtenderNames;
-                return extenderNames.Any(extenderNameObject => extenderNameObject.ToString() == "WebApplication");
-            }
-            catch
-            {
-                // Ignore 
-            }
-
-            return false;
+            button.Visible = project.IsWebProject();
         }
 
         public static bool HasExtender(Project proj, string extenderName)
@@ -83,7 +65,7 @@ namespace LigerShark.WebJobsVs
         private void ButtonClicked(object sender, EventArgs e)
         {
             Project currentProject = GetSelectedProjects().ElementAt(0);
-            var projects = GetProjectsInSolution();
+            var projects = _dte.Solution.GetAllProjects();
             var names = from p in projects
                         where p != currentProject
                         select p.Name;
@@ -115,28 +97,8 @@ namespace LigerShark.WebJobsVs
                 }
             }
         }
-
-        private IEnumerable<Project> GetProjectsInSolution()
-        {
-            return _dte.Solution.Projects
-                .Cast<Project>()
-                .SelectMany(GetChildProjects);
-        }
-
-        private static IEnumerable<Project> GetChildProjects(Project parent)
-        {
-            if (parent.Collection == null)  // Unloaded
-                return Enumerable.Empty<Project>();
-
-            if (!String.IsNullOrEmpty(parent.FullName))
-                return new[] { parent };
-
-            return parent.ProjectItems
-                    .Cast<ProjectItem>()
-                    .Where(p => p.SubProject != null)
-                    .SelectMany(p => GetChildProjects(p.SubProject));
-        }
-
+        
+        // TODO: Extract NuGet specifics to helper class
         private bool InstallWebJobsNuGetPackage(EnvDTE.Project project)
         {
             bool installedPkg = false;

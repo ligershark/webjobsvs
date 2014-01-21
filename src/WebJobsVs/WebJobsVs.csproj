@@ -148,6 +148,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\SolutionHelper.cs" />
     <Compile Include="Job\WebJobCreator.cs" />
     <Compile Include="Job\ProjectSelector2.xaml.cs">
       <DependentUpon>ProjectSelector2.xaml</DependentUpon>
