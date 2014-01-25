@@ -65,7 +65,7 @@ namespace LigerShark.WebJobsVs
         private void ButtonClicked(object sender, EventArgs e)
         {
             Project currentProject = GetSelectedProjects().ElementAt(0);
-            var projects = _dte.Solution.GetAllProjects();
+            var projects = _dte.Solution.GetAllNonWebProjects();
             var names = from p in projects
                         where p != currentProject
                         select p.Name;

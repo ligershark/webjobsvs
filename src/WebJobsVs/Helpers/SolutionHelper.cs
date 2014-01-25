@@ -42,7 +42,11 @@ namespace LigerShark.WebJobsVs
                     list.Add(project);
             }
 
-            return list.Where(p => p.IsWebProject());
+            return list;
+        }
+
+        public static IEnumerable<Project> GetAllNonWebProjects(this Solution solution) {
+            return GetAllProjects(solution).Where(p => !p.IsWebProject());
         }
 
         private static IEnumerable<Project> GetSolutionFolderProjects(Project solutionFolder)
