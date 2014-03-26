@@ -67,7 +67,7 @@ namespace LigerShark.WebJobsVs
             Project currentProject = GetSelectedProjects().ElementAt(0);
             var projects = _dte.Solution.GetAllProjects();
             var names = from p in projects
-                        where p != currentProject
+                        where p.UniqueName != currentProject.UniqueName
                         select p.Name;
 
             ProjectSelector2 selector = new ProjectSelector2(names);
@@ -78,7 +78,9 @@ namespace LigerShark.WebJobsVs
                 WebJobCreator creator = new WebJobCreator();
                 var selectedProject = projects.First(p => p.Name == selector.SelectedProjectName);
                 creator.AddReference(currentProject, selectedProject);
-                creator.CreateFolders(currentProject, selector.Schedule, selector.SelectedProjectName);
+                var relativePath = new Uri(currentProject.FullName).MakeRelativeUri(new Uri(selectedProject.FullName)).ToString();
+                relativePath = relativePath.Replace("/", "\\");
+                creator.CreateFolders(currentProject, selector.Schedule, selector.SelectedProjectName, relativePath);
 
                 // ensure that the NuGet package is installed in the project as well
                 InstallWebJobsNuGetPackage(currentProject);
@@ -97,7 +99,7 @@ namespace LigerShark.WebJobsVs
                 }
             }
         }
-        
+
         // TODO: Extract NuGet specifics to helper class
         private bool InstallWebJobsNuGetPackage(EnvDTE.Project project)
         {

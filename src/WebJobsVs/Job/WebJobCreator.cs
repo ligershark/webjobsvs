@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using EnvDTE;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace LigerShark.WebJobsVs
 {
@@ -26,16 +28,35 @@ namespace LigerShark.WebJobsVs
             }
         }
 
-        public void CreateFolders(Project currentProject, string schedule, string projectName)
+        public void CreateFolders(Project currentProject, string schedule, string projectName, string relativePath)
         {
-            string dir = GetProjectDirectory(currentProject);
-            DirectoryInfo info = new DirectoryInfo(dir)
-                .CreateSubdirectory("App_Data\\jobs")
-                .CreateSubdirectory(schedule)
-                .CreateSubdirectory(projectName);
+            //Create a File under Properties Folder which will contain information about all WebJobs
+            //https://github.com/ligershark/webjobsvs/issues/6
 
-            string readmeFile = Path.Combine(info.FullName, "readme.txt");
-            AddReadMe(readmeFile);
+            // Check if the WebApp is C# or VB
+            string dir = GetProjectDirectory(currentProject);
+            var propertiesFolderName = "Properties";
+            if (currentProject.CodeModel.Language == CodeModelLanguageConstants.vsCMLanguageVB)
+            {
+                propertiesFolderName = "My Project";
+            }
+
+            DirectoryInfo info = new DirectoryInfo(Path.Combine(dir, propertiesFolderName));
+
+            string readmeFile = Path.Combine(info.FullName, "WebJobs.xml");
+
+            // Copy File if it does not exit
+            if (!File.Exists(readmeFile))
+                AddReadMe(readmeFile);
+
+            //Add a WebJob info to it
+            XDocument doc = XDocument.Load(readmeFile);
+            XElement root = new XElement("WebJob");
+            root.Add(new XAttribute("Project", projectName));
+            root.Add(new XAttribute("RelativePath", relativePath));
+            root.Add(new XAttribute("Schedule", schedule));
+            doc.Element("WebJobs").Add(root);
+            doc.Save(readmeFile);
             currentProject.ProjectItems.AddFromFile(readmeFile);
         }
 

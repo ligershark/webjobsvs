@@ -33,7 +33,7 @@ namespace LigerShark.WebJobsVs
             while (item.MoveNext())
             {
                 var project = item.Current as Project;
-                if (project == null)
+                if (project == null || project.UniqueName.Equals("<MiscFiles>"))
                     continue;
 
                 if (project.Kind == ProjectKinds.vsProjectKindSolutionFolder)
@@ -42,7 +42,7 @@ namespace LigerShark.WebJobsVs
                     list.Add(project);
             }
 
-            return list.Where(p => p.IsWebProject());
+            return list.Where(p => !p.IsWebProject());
         }
 
         private static IEnumerable<Project> GetSolutionFolderProjects(Project solutionFolder)
