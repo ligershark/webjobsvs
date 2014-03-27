@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>WebJobsBuilder</id>
-    <version>0.1.1-beta</version>
+    <version>0.1.2-beta</version>
     <authors>Sayed Ibrahim Hashimi</authors>
     <owners>Sayed Ibrahim Hashimi</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
@@ -22,5 +22,6 @@
   <files>
     <file src="webjobs.wpp.targets" target="content\webjobs.wpp.targets"/>
     <file src="ligershark.webjobs.targets" target="content\Properties\ligershark.webjobs.targets"/>
+    <file src="ligershark.webjobs.ext.targets" target="content\Properties\ligershark.webjobs.ext.targets"/>
   </files>
 </package>

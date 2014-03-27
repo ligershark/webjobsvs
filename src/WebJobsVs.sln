@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30318.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebJobsVs", "WebJobsVs\WebJobsVs.csproj", "{73F95BFF-1406-4F5B-89ED-488653DC26BA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other Files", "Other Files", "{7EF95821-5BA5-4B8B-8EC5-55B5EF375AC1}"
 	ProjectSection(SolutionItems) = preProject
 		..\build-nugetpkg.ps1 = ..\build-nugetpkg.ps1
+		ligershark.webjobs.ext.targets = ligershark.webjobs.ext.targets
 		ligershark.webjobs.targets = ligershark.webjobs.targets
 		webjobs.nuspec = webjobs.nuspec
 		webjobs.wpp.targets = webjobs.wpp.targets

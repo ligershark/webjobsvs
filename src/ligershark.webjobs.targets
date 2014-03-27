@@ -27,6 +27,7 @@ Copyright (C) 2014. All rights reserved.
   
   <PropertyGroup>
     <wj-extendWebPublish Condition=" '$(wj-extendWebPublish)'=='' ">true</wj-extendWebPublish>
+    <wj-extensionTargetsPath Condition=" '$(wj-ExtensionTargetsPath)'=='' ">$(MSBuildThisFileDirectory)ligershark.webjobs.ext.targets</wj-extensionTargetsPath>
     <wj-configfile Condition=" '$(wj-configfile)'=='' ">$(wj-props-folder)WebJobs.xml</wj-configfile>
     <wj-jobs-xpath Condition=" '$(ls-jobs-xpath)'=='' ">WebJobs/WebJob/@RelativePath</wj-jobs-xpath>    
 </PropertyGroup>
@@ -156,6 +157,14 @@ Copyright (C) 2014. All rights reserved.
              Condition=" '@(ls-WebJobs)'!='' ">
       <Output ItemName="_ls-projOutputs" TaskParameter="TargetOutputs" />
     </MSBuild>
+    <!-- Get copy local files -->
+    <MSBuild Projects="$(_ls-projFullPath)"  
+             Targets="wj-GetCopyLocalFiles"
+             Properties="CustomBeforeMicrosoftCommonTargets=C:\Data\personal\mycode\webjobsvs\src\ligershark.webjobs.ext.targets"
+             Condition=" '@(ls-WebJobs)'!='' ">
+      <Output ItemName="_ls-projOutputs" TaskParameter="TargetOutputs" />
+    </MSBuild>
+    
     <Message Text="WebJobs: Output files for publishing (_ls-projOutputs) [@(_ls-projOutputs->'%(Identity): TargetPath=[%(TargetPath)]','%0a%0d')]" 
              Condition=" '@(ls-WebJobs)'!='' "/>
     <!-- Now add these files to the correct item in order to have the published -->
