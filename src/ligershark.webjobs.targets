@@ -152,7 +152,7 @@ Copyright (C) 2014. All rights reserved.
       <_ls-projOutputs Remove="@(_ls-projOutputs)"/>
     </ItemGroup>
     <MSBuild Projects="$(_ls-projFullPath)" 
-             Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup"
+             Targets="Build;BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup"
              Condition=" '@(ls-WebJobs)'!='' ">
       <Output ItemName="_ls-projOutputs" TaskParameter="TargetOutputs" />
     </MSBuild>
@@ -164,18 +164,17 @@ Copyright (C) 2014. All rights reserved.
       <FilesForPackagingFromProject Include="%(_ls-projectRefFiles.Identity)">
         <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-projName)\%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
-      <FilesForPackagingFromProject Include="%(_ls-projectRefFiles.Identity)">
-        <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-projName)\%(Filename)%(Extension)</DestinationRelativePath>
-      </FilesForPackagingFromProject>
 
       <!-- Add outputs from the project -->
-      <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)">
-        <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-projName)\%(_ls-projOutputs.TargetPath)</DestinationRelativePath>
-      </FilesForPackagingFromProject>
-      <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)">
+      <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)"
+                                    Condition=" '%(_ls-projOutputs.TargetPath)' != '' " >
         <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-projName)\%(_ls-projOutputs.TargetPath)</DestinationRelativePath>
       </FilesForPackagingFromProject>      
-    </ItemGroup>    
+      <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)"
+                                    Condition=" '%(_ls-projOutputs.TargetPath)' == '' " >
+        <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-projName)\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
   </Target>
 
 
