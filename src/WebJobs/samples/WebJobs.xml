@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Don't delete this file. It is used for publishing Windows Azure WebJobs.-->
+<WebJobs>
+  <WebJob Project="ConsoleApplication1" RelativePath="..\ConsoleApplication1\ConsoleApplication1.csproj" Schedule="continuous" />
+  <WebJob Project="ConsoleApplication2" RelativePath="..\ConsoleApplication2\ConsoleApplication2.csproj" Schedule="triggered" />
+</WebJobs>

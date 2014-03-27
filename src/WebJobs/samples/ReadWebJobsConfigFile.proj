@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Demo" ToolsVersion="4.0">
+
+  <PropertyGroup>
+    <SrcRoot>$(MSBuildThisFileDirectory)..\</SrcRoot>
+    <TasksPath>$(SrcRoot)bin\debug\WebJobs.dll</TasksPath>
+    <SampleFile>$(SrcRoot)samples\WebJobs.xml</SampleFile>
+  </PropertyGroup>
+
+  <UsingTask TaskName="ReadWebJobsConfigFile" AssemblyFile="$(TasksPath)" />
+  
+  <Target Name="Demo">
+    <ReadWebJobsConfigFile ConfigFile="$(SampleFile)">
+      <Output TaskParameter="JobsFound" ItemName="temp-jobs-found"/>
+    </ReadWebJobsConfigFile>
+
+    <Message Text="temp-jobs-found: @(temp-jobs-found)"  Importance="high"/>
+
+    <Message Text="Job, rel path='%(temp-jobs-found.Identity)', schedule='%(temp-jobs-found.schedule)'" Importance="high" />
+    
+  </Target>
+
+</Project>
