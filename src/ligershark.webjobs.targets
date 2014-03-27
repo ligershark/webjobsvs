@@ -18,39 +18,41 @@ Copyright (C) 2014. All rights reserved.
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildProjectDirectory)\Properties\webjobs.props"
           Condition="Exists('$(MSBuildProjectDirectory)\Properties\webjobs.props')" />
-  
+  <Target Name="AfterBuild">
+    <Message Text="wj-ExtendWebPublish: [$(wj-ExtendWebPublish)]" Importance="high"/>
+  </Target>
   <PropertyGroup>
     <wj-ExtendWebPublish Condition=" '$(wj-ExtendWebPublish)'=='' ">true</wj-ExtendWebPublish>
-    
-    <!-- TODO: We should be able to remove some of these -->
-    <CopyAllFilesToSingleFolderForPackageDependsOn Condition=" '$(wj-ExtendWebPublish)'=='true' ">
+    <wj-ExtensionTargetsPath Condition=" '$(wj-ExtensionTargetsPath)'=='' ">$(MSBuildThisFileDirectory)ligershark.webjobs.ext.targets</wj-ExtensionTargetsPath>    
+
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
       ls-AddWebJobFilesToPublish;
       $(CopyAllFilesToSingleFolderForPackageDependsOn);
     </CopyAllFilesToSingleFolderForPackageDependsOn>
 
-    <OnAfterPipelinePreDeployCopyAllFilesToOneFolder Condition=" '$(wj-ExtendWebPublish)'=='true' ">
+    <OnAfterPipelinePreDeployCopyAllFilesToOneFolder>
       ls-AddWebJobFilesToPublish;
       $(OnAfterPipelinePreDeployCopyAllFilesToOneFolder);      
     </OnAfterPipelinePreDeployCopyAllFilesToOneFolder>
     
-    <CopyAllFilesToSingleFolderForMsdeploy Condition=" '$(wj-ExtendWebPublish)'=='true' ">
+    <CopyAllFilesToSingleFolderForMsdeploy>
       ls-AddWebJobFilesToPublish;
       $(CopyAllFilesToSingleFolderForMsdeploy);
     </CopyAllFilesToSingleFolderForMsdeploy>
 
     <!-- For VS2012 -->
-    <PipelineCopyAllFilesToOneFolderForMsdeployDependsOn Condition=" '$(wj-ExtendWebPublish)'=='true' ">
+    <PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
       ls-AddWebJobFilesToPublish;
       $(PipelineCopyAllFilesToOneFolderForMsdeployDependsOn);      
     </PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
 
     <!-- Required for File System -->
-    <PipelinePreDeployCopyAllFilesToOneFolderDependsOn Condition=" '$(wj-ExtendWebPublish)'=='true' ">
+    <PipelinePreDeployCopyAllFilesToOneFolderDependsOn>
       ls-AddWebJobFilesToPublish;
       $(PipelinePreDeployCopyAllFilesToOneFolderDependsOn);      
     </PipelinePreDeployCopyAllFilesToOneFolderDependsOn>
     <!-- required for FS support from the VS publish dialog -->
-    <OnAfterCopyAllFilesToSingleFolderForPackage Condition=" '$(wj-ExtendWebPublish)'=='true' ">
+    <OnAfterCopyAllFilesToSingleFolderForPackage>
       ls-AddWebJobFilesToPublish;
       $(OnAfterCopyAllFilesToSingleFolderForPackage);      
     </OnAfterCopyAllFilesToSingleFolderForPackage>    
@@ -73,6 +75,7 @@ Copyright (C) 2014. All rights reserved.
   <Target Name="ls-DiscoverWebJobs" 
           Outputs="%(ProjectReference.Identity)"
           DependsOnTargets="$(ls-DiscoverWebJobsDependsOn)">
+    <Message Text="inside ls-DiscoverWebJobs" Importance="high"/>
     <!-- For this reference see if there is at least one file in the expected location -->
     <PropertyGroup>
       <_ls-projectfilename>%(ProjectReference.Filename)</_ls-projectfilename>
@@ -142,9 +145,20 @@ Copyright (C) 2014. All rights reserved.
     </PropertyGroup>
     <ItemGroup>
       <_ls-projectRefFiles Remove="_ls-projectRefFiles"/>
+      <!--<_ls-projectRefFiles  Include="@(ReferenceCopyLocalPaths)" />-->
       <_ls-projectRefFiles  Include="@(ReferenceCopyLocalPaths)"
                      Condition=" '%(ReferenceCopyLocalPaths.MSBuildSourceProjectFile)'=='$(_ls-projFullPath)' " />
     </ItemGroup>
+    <Message Text="
+ReferenceCopyLocalPaths: @(ReferenceCopyLocalPaths)
+ReferenceDependencyPaths: @(ReferenceDependencyPaths)
+ReferencePath: @(ReferencePath)
+_ReferenceRelatedPaths: @(_ReferenceRelatedPaths)
+ReferenceSatellitePaths: @(ReferenceSatellitePaths)
+_ReferenceSerializationAssemblyPaths:@(_ReferenceSerializationAssemblyPaths)
+_ReferenceScatterPaths: @(_ReferenceScatterPaths)
+ReferenceCopyLocalPaths:@(ReferenceCopyLocalPaths)
+             " Importance="high"/>
     <Message Text="webjobs: _ls-projName:$(_ls-projName)" Importance="low"/>
     <Message Text="webjobs: Reference files for publishing _ls-projectRefFiles: [@(_ls-projectRefFiles,'%0a%0d')]" Importance="low" />
 
@@ -152,33 +166,67 @@ Copyright (C) 2014. All rights reserved.
     <ItemGroup>
       <_ls-projOutputs Remove="@(_ls-projOutputs)"/>
     </ItemGroup>
-    <MSBuild Projects="$(_ls-projFullPath)" Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup">
+    <Message Text="Getting project output: [$(_ls-projFullPath)]" Importance="high"/>
+    <MSBuild Projects="$(_ls-projFullPath)" 
+             Targets="BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;SGenFilesOutputGroup">
       <Output ItemName="_ls-projOutputs" TaskParameter="TargetOutputs" />
     </MSBuild>
+
+    <MSBuild Projects="$(_ls-projFullPath)"
+             Targets="GetReferenceCopyLocalPaths" Properties="CustomBeforeMicrosoftCommonTargets=$(wj-ExtensionTargetsPath)">
+      
+      <Output ItemName="_ls-projOutputs" TaskParameter="TargetOutputs" />
+    </MSBuild>   
+    
     <Message Text="WebJobs: Output files for publishing [@(_ls-projOutputs->'%(Identity): TargetPath=[%(TargetPath)]','%0a%0d')]" Importance="high" />
     
     <!-- Now add these files to the correct item in order to have the published -->
     <ItemGroup>
       <!-- Add references from the project -->
       <FilesForPackagingFromProject Include="%(_ls-projectRefFiles.Identity)" 
-                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\continuous\$(_ls-projName)\')">
+                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\continuous\$(_ls-projName)')">
         <DestinationRelativePath>app_data\jobs\continuous\$(_ls-projName)\%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
       <FilesForPackagingFromProject Include="%(_ls-projectRefFiles.Identity)"
-                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\triggered\$(_ls-projName)\')">
+                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\triggered\$(_ls-projName)')">
         <DestinationRelativePath>app_data\jobs\triggered\$(_ls-projName)\%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
 
       <!-- Add outputs from the project -->
       <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)" 
-                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\continuous\$(_ls-projName)\')">
+                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\continuous\$(_ls-projName)') and
+                                    '%(_ls-projOutputs.TargetPath)' !='' ">
         <DestinationRelativePath>app_data\jobs\continuous\$(_ls-projName)\%(_ls-projOutputs.TargetPath)</DestinationRelativePath>
       </FilesForPackagingFromProject>
       <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)"
-                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\triggered\$(_ls-projName)\')">
+                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\continuous\$(_ls-projName)') and
+                                    '%(_ls-projOutputs.TargetPath)' =='' ">
+        <DestinationRelativePath>app_data\jobs\continuous\$(_ls-projName)\%(_ls-projOutputs.FileName)%(_ls-projOutputs.Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+      
+      
+      <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)"
+                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\triggered\$(_ls-projName)') and
+                                               '%(_ls-projOutputs.TargetPath)' !='' ">
         <DestinationRelativePath>app_data\jobs\triggered\$(_ls-projName)\%(_ls-projOutputs.TargetPath)</DestinationRelativePath>
-      </FilesForPackagingFromProject>      
+      </FilesForPackagingFromProject>
+      <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)"
+                                    Condition="Exists('$(MSBuildProjectDirectory)\app_data\jobs\triggered\$(_ls-projName)') and
+                                               '%(_ls-projOutputs.TargetPath)' =='' ">
+        <DestinationRelativePath>app_data\jobs\triggered\$(_ls-projName)\%(_ls-projOutputs.FileName)%(_ls-projOutputs.Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
     </ItemGroup>
+
+    <Message Text="_ls-projectRefFiles: @(_ls-projectRefFiles)" Importance="high" />
+    <Message Text="_ls-projOutputs: @(_ls-projOutputs)" Importance="high" />
+    <Message Text="FilesForPackagingFromProject: @(FilesForPackagingFromProject)" Importance="high"/>
+    <Message Text="FilesForPackagingFromProject-DestinationRelativePath [%(FilesForPackagingFromProject.Identity)]:%(FilesForPackagingFromProject.DestinationRelativePath)" Importance="high"/>
   </Target>
 
+  
+  <!-- This target should be moved into it's own isolated file -->
+  <Target Name="GetReferenceCopyLocalPaths" Returns="@(ReferenceCopyLocalPaths)" DependsOnTargets="ResolveAssemblyReferences">
+    <Message Text="ReferenceCopyLocalPaths: [@(ReferenceCopyLocalPaths)]" Importance="high"/>
+  </Target>
+  
 </Project>
