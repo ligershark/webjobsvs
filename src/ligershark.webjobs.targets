@@ -160,7 +160,7 @@ Copyright (C) 2014. All rights reserved.
     <!-- Get copy local files -->
     <MSBuild Projects="$(_ls-projFullPath)"  
              Targets="wj-GetCopyLocalFiles"
-             Properties="CustomBeforeMicrosoftCommonTargets=C:\Data\personal\mycode\webjobsvs\src\ligershark.webjobs.ext.targets"
+             Properties="CustomBeforeMicrosoftCommonTargets=$(wj-extensionTargetsPath)"
              Condition=" '@(ls-WebJobs)'!='' ">
       <Output ItemName="_ls-projOutputs" TaskParameter="TargetOutputs" />
     </MSBuild>
