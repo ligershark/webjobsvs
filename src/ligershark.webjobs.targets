@@ -20,7 +20,7 @@ Copyright (C) 2014. All rights reserved.
   <PropertyGroup>
     <!-- TODO: needs to be updated to support VB -->
     <wj-props-folder Condition=" '$(wj-props-folder)'=='' ">$(MSBuildProjectDirectory)\Properties\</wj-props-folder>
-
+    <WebPublishExtensionsToExclude>$(WebPublishExtensionsToExclude);.tt;.settings;.targets</WebPublishExtensionsToExclude>
   </PropertyGroup>
   
   <Import Project="$(wj-props-folder)webjobs.props" Condition="Exists('$(wj-props-folder)webjobs.props')" />
