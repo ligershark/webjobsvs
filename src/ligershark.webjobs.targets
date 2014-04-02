@@ -186,10 +186,15 @@ Copyright (C) 2014. All rights reserved.
     </ItemGroup>
   </Target>
 
-
+  <PropertyGroup Condition=" '$(ls-msbuildtasks-path)'=='' ">
+    <ls-msbuildtasks-path>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</ls-msbuildtasks-path>
+    <ls-msbuildtasks-path Condition=" !Exists('$(ls-msbuildtasks-path)')">$(MSBuildFrameworkToolsPath)\Microsoft.Build.Tasks.v4.0.dll</ls-msbuildtasks-path>
+    <ls-msbuildtasks-path Condition=" !Exists('$(ls-msbuildtasks-path)')">$(windir)\Microsoft.NET\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll</ls-msbuildtasks-path>
+  </PropertyGroup>
+  
   <UsingTask TaskName="ReadWebJobsConfigFile"
              TaskFactory="CodeTaskFactory"
-             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+             AssemblyFile="$(ls-msbuildtasks-path)">
     <ParameterGroup>
       <ConfigFile Required="true"/>
       <JobsFound ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true"/>
