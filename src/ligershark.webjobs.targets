@@ -136,6 +136,7 @@ Copyright (C) 2014. All rights reserved.
       <_ls-projName>%(ls-WebJobs.Filename)</_ls-projName>
       <_ls-projFullPath>%(_ls-tempProjFile.FullPath)</_ls-projFullPath>
       <_ls-schedule>%(ls-WebJobs.Schedule)</_ls-schedule>
+      <_ls-name>%(ls-WebJobs.Name)</_ls-name>
     </PropertyGroup>
 
     <Error Text="Schedule metadata missing from webjob [%(ls-WebJobs.Identity)]" Condition=" '$(_ls-schedule)'=='' " />
@@ -171,17 +172,17 @@ Copyright (C) 2014. All rights reserved.
     <ItemGroup Condition=" '@(ls-WebJobs)'!='' ">
       <!-- Add references from the project -->
       <FilesForPackagingFromProject Include="%(_ls-projectRefFiles.Identity)">
-        <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-projName)\%(Filename)%(Extension)</DestinationRelativePath>
+        <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-name)\%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
 
       <!-- Add outputs from the project -->
       <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)"
                                     Condition=" '%(_ls-projOutputs.TargetPath)' != '' " >
-        <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-projName)\%(_ls-projOutputs.TargetPath)</DestinationRelativePath>
+        <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-name)\%(_ls-projOutputs.TargetPath)</DestinationRelativePath>
       </FilesForPackagingFromProject>      
       <FilesForPackagingFromProject Include="%(_ls-projOutputs.Identity)"
                                     Condition=" '%(_ls-projOutputs.TargetPath)' == '' " >
-        <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-projName)\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+        <DestinationRelativePath>app_data\jobs\$(_ls-schedule)\$(_ls-name)\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
     </ItemGroup>
   </Target>
@@ -212,6 +213,7 @@ Copyright (C) 2014. All rights reserved.
             var doc = XDocument.Load(ConfigFile);
             var jobs = from wj in doc.Root.Elements("WebJob")
                        select new {
+                           Name = wj.Attribute("Project").Value,
                            RelPath = wj.Attribute("RelativePath").Value,
                            Schedule = wj.Attribute("Schedule").Value
                        };
@@ -222,6 +224,7 @@ Copyright (C) 2014. All rights reserved.
 
                 var item = new TaskItem(job.RelPath);
                 item.SetMetadata("Schedule", job.Schedule);
+                item.SetMetadata("Name", job.Name);
 
                 resultList.Add(item);
             }
